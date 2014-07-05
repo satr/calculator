@@ -13,11 +13,10 @@ using namespace std;
 View::View(int argc, char **argv) {
 	  app = Gtk::Application::create(argc, argv, "c.a.l.c.u.l.a.t.o.r");
 
-	  //Load the GtkBuilder file and instantiate its widgets:
 	  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
 	  try
 	  {
-	    builder->add_from_file("/home/user1/spikes/cpp/Calculator/src/res/Main.glade");
+	    builder->add_from_file("../src/res/Main.glade");
 	  }
 	  catch(const Glib::FileError& ex)
 	  {
