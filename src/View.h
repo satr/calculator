@@ -15,6 +15,8 @@ private:
     Glib::RefPtr<Gtk::Application> _app;
     Glib::RefPtr<Gtk::Builder> _builder;
     Gtk::Window *_appWindow;
+    Gtk::SpinButton *_numValue1;
+    Gtk::SpinButton *_numValue2;
     Gtk::Label *_lblResult;
 	IPresenter *_presenter;
     void closeApplication();
@@ -23,8 +25,13 @@ private:
     void logError(const char* message);
     void logError(const char* message, const Glib::Exception& ex);
     std::string toString(double value);
-	template <class T> void bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& buttonName,
-	                                          T* obj, void (T::*func)(void));
+	template <class T> Gtk::Button* bindButtonOnClick(const std::string& buttonName,
+	                                                  T* obj, void (T::*func)(void));
+	template <class T> Gtk::SpinButton* bindNumValueUpdate(const std::string&  buttonName,
+	                                                       T* obj, void (T::*func)(void));
+	void valueUpdated(Gtk::SpinButton* numButton, void (IPresenter::*setValueFunc)(double));
+	void value1Updated();
+	void value2Updated();
 
 public:
 	View(int, char**);

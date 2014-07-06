@@ -7,8 +7,8 @@
 
 #include "Presenter.h"
 
-Presenter::Presenter(View *view) {
-	_view = view;
+Presenter::Presenter(View *view, Model *model)
+    : _view(view), _model(model) {
     _view->setPresenter(this);
 }
 
@@ -17,5 +17,13 @@ void Presenter::run(){
 }
 
 void Presenter::calculate() {
-    _view->setResult(1.23);
+    _view->setResult(_model->calculate());
+}
+
+void Presenter::setValue1(double value) {
+    _model->setValue1(value);
+}
+
+void Presenter::setValue2(double value) {
+    _model->setValue2(value);
 }

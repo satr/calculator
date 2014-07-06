@@ -14,6 +14,8 @@ public:
     virtual ~IPresenter(){};
     virtual void run() = 0;
     virtual void calculate() = 0;
+    virtual void setValue1(double) = 0;
+    virtual void setValue2(double) = 0;
 };
 
 

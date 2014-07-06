@@ -7,15 +7,17 @@
 //============================================================================
 
 #include <iostream>
-#include "Presenter.h"
 #include "View.h"
+#include "Model.h"
+#include "Presenter.h"
 #include <gtkmm/main.h>
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 	View view (argc, argv);
-	Presenter presenter (&view);
+	Model model;
+	Presenter presenter (&view, &model);
 	presenter.run();
 	return 0;
 }

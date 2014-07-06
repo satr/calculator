@@ -36,15 +36,27 @@ void View::show(){
 }
 
 //Find a button by the builder and bind a click-signal to a function of an object
-template <class T> void View::bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& buttonName,
+template <class T> Gtk::Button* View::bindButtonOnClick(const std::string& buttonName,
                                                 T* obj, void (T::*func)(void)) {
-    if(!builder)
-        return;
     Gtk::Button* button = 0;
-    builder->get_widget(buttonName, button);
-    if (!button)
-        return;
-    button->signal_clicked().connect(sigc::mem_fun(obj, func));
+    if(!_builder)
+        return button;
+    _builder->get_widget(buttonName, button);
+    if (button)
+        button->signal_clicked().connect(sigc::mem_fun(obj, func));
+    return button;
+}
+
+//Find a button by the builder and bind a change-value-signal to a function of an object
+template <class T> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  buttonName,
+                                                T* obj, void (T::*func)(void)) {
+    Gtk::SpinButton* button = 0;
+    if(!_builder)
+        return button;
+    _builder->get_widget(buttonName, button);
+    if (button)
+        button->signal_value_changed().connect(sigc::mem_fun(obj, func));
+    return button;
 }
 
 void View::closeApplication() {
@@ -54,7 +66,9 @@ void View::closeApplication() {
 
 void View::setPresenter(IPresenter* presenter) {
     _presenter = presenter;
-    bindButtonOnClick(_builder, "btnCalculate", _presenter, &IPresenter::calculate);
+    bindButtonOnClick("btnCalculate", _presenter, &IPresenter::calculate);
+    _numValue1 = bindNumValueUpdate("numValue1", this, &View::value1Updated);
+    _numValue2 = bindNumValueUpdate("numValue2", this, &View::value2Updated);
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
@@ -82,6 +96,20 @@ Glib::RefPtr<Gtk::Builder> View::createBuilder(const std::string& layoutFileName
         logError("BuilderError: ", ex);
     }
     return builder;
+}
+
+void View::value1Updated(){
+    valueUpdated(_numValue1, &IPresenter::setValue1);
+}
+
+void View::value2Updated(){
+    valueUpdated(_numValue2, &IPresenter::setValue2);
+}
+
+void View::valueUpdated(Gtk::SpinButton* numButton, void (IPresenter::*func)(double)){
+    if(!numButton || !_presenter)
+        return;
+    (_presenter->*func)(numButton->get_value());
 }
 
 void View::setResult(double value) {
