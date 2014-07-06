@@ -9,8 +9,8 @@
 #define VIEW_H_
 #include <gtkmm.h>
 #include "IView.h"
-#include "ILogger.h"
-#include "IPresenter.h"
+#include "../Diagnostics/ILogger.h"
+#include "../UI/IPresenter.h"
 
 class View: public virtual IView {
 private:

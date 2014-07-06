@@ -9,8 +9,8 @@
 #define PRESENTER_H_
 #include "IPresenter.h"
 #include "IView.h"
-#include "Model.h"
-#include "ILogger.h"
+#include "../BL/Model.h"
+#include "../Diagnostics/ILogger.h"
 
 class Presenter: public virtual IPresenter {
 private:

@@ -7,10 +7,10 @@
 //============================================================================
 
 #include <iostream>
-#include "ConsoleLogger.h"
-#include "View.h"
-#include "Model.h"
-#include "Presenter.h"
+#include "Diagnostics/ConsoleLogger.h"
+#include "UI/View.h"
+#include "BL/Model.h"
+#include "UI/Presenter.h"
 #include <gtkmm/main.h>
 
 using namespace std;
