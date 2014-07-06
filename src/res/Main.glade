@@ -99,9 +99,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkComboBoxText" id="comboboxtext1">
+          <object class="GtkComboBoxText" id="lstOperation">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="active">0</property>
+            <items>
+              <item id="add" translatable="yes">+</item>
+              <item id="sub" translatable="yes">-</item>
+            </items>
           </object>
           <packing>
             <property name="left_attach">1</property>

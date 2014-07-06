@@ -10,9 +10,10 @@
 
 using namespace std;
 
+const char* View::APPLICATION_NAME = "c.a.l.c.u.l.a.t.o.r";
+const char* View::LAYOUT_FILE_NAME = "/home/user1/spikes/cpp/calculator/src/res/Main.glade";
+
 View::View(int argc, char **argv, ILogger *logger): _logger(logger) {
-    const char* APPLICATION_NAME = "c.a.l.c.u.l.a.t.o.r";
-    const char* LAYOUT_FILE_NAME = "/home/user1/spikes/cpp/calculator/src/res/Main.glade";
 
     createApplication(argc, argv, APPLICATION_NAME);
     _builder = createBuilder(LAYOUT_FILE_NAME);
@@ -36,15 +37,20 @@ void View::show(){
 }
 
 //Find a button by the builder and bind a click-signal to a function of an object
-template <class T_handler> void View::bindButtonOnClick(const std::string& buttonName, T_handler* obj,
+template <class T_handler> void View::bindButtonOnClick(const std::string& widgetName, T_handler* obj,
                                                         void (T_handler::*func)(void)) {
-    View::bindWidgetToSignal<T_handler, Gtk::Button>(buttonName, &Gtk::Button::signal_clicked, obj, func);
+    View::bindWidgetToSignal<T_handler, Gtk::Button>(widgetName, &Gtk::Button::signal_clicked, obj, func);
 }
 
 //Find a button by the builder and bind a change-value-signal to a function of an object
-template <class T_handler> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  buttonName, T_handler* obj,
+template <class T_handler> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  widgetName, T_handler* obj,
                                                                      void (T_handler::*func)(void)) {
-    return View::bindWidgetToSignal<T_handler, Gtk::SpinButton>( buttonName, &Gtk::SpinButton::signal_value_changed, obj, func);
+    return View::bindWidgetToSignal<T_handler, Gtk::SpinButton>(widgetName, &Gtk::SpinButton::signal_value_changed, obj, func);
+}
+
+template<class T_handler> Gtk::ComboBoxText* View::bindComboBoxOnChange(const std::string& widgetName,
+        T_handler* obj, void (T_handler::*func)(void)) {
+    return View::bindWidgetToSignal<T_handler, Gtk::ComboBoxText>(widgetName, &Gtk::ComboBox::signal_changed, obj, func);
 }
 
 //Find a widget by the builder and bind a signal to a function of an object
@@ -73,6 +79,8 @@ void View::setPresenter(IPresenter* presenter) {
     bindButtonOnClick("btnCalculate", _presenter, &IPresenter::calculate);
     _numValue1 = bindNumValueUpdate("numValue1", this, &View::value1Updated);
     _numValue2 = bindNumValueUpdate("numValue2", this, &View::value2Updated);
+    _lstOperation = bindComboBoxOnChange("lstOperation", this, &View::operationUpdated);
+    operationUpdated();//set first operation as current
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
@@ -106,6 +114,12 @@ void View::valueUpdated(Gtk::SpinButton* numButton, void (IPresenter::*func)(dou
     if(!numButton || !_presenter)
         return;
     (_presenter->*func)(numButton->get_value());
+}
+
+void View::operationUpdated() {
+    if(!_lstOperation || !_presenter)
+        return;
+    _presenter->setCurrentOperation(_lstOperation->get_active_id());
 }
 
 void View::setResult(double value) {

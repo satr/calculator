@@ -7,7 +7,9 @@
 
 #ifndef IPRESENTER_H_
 #define IPRESENTER_H_
+#include <iostream>
 
+using namespace std;
 
 class IPresenter{
 public:
@@ -16,6 +18,7 @@ public:
     virtual void calculate() = 0;
     virtual void setValue1(double) = 0;
     virtual void setValue2(double) = 0;
+    virtual void setCurrentOperation(std::string) = 0;
 };
 
 

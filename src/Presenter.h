@@ -24,6 +24,7 @@ public:
 	virtual void calculate();
     virtual void setValue1(double);
     virtual void setValue2(double);
+    virtual void setCurrentOperation(std::string);
 };
 
 #endif /* PRESENTER_H_ */
