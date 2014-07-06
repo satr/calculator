@@ -8,6 +8,8 @@
 #include "ConsoleLogger.h"
 
 void ConsoleLogger::logDebug(const std::string message) {
+    if(!_includeDebug)
+        return;
     logInfo(message);
 }
 
@@ -17,6 +19,18 @@ void ConsoleLogger::logInfo(const std::string message) {
 
 void ConsoleLogger::logError(const std::string message) {
     std::cerr << message << std::endl;
+}
+
+void ConsoleLogger::ctorInit(bool includeDebug) {
+    _includeDebug = includeDebug;
+}
+
+ConsoleLogger::ConsoleLogger(bool includeDebug) {
+    ctorInit(includeDebug);
+}
+
+ConsoleLogger::ConsoleLogger(){
+    ctorInit(false);
 }
 
 void ConsoleLogger::logError(const std::string title, const std::string message) {

@@ -36,29 +36,31 @@ void View::show(){
 }
 
 //Find a button by the builder and bind a click-signal to a function of an object
-template <class T> void View::bindButtonOnClick(const std::string& buttonName,
-                                                T* obj, void (T::*func)(void)) {
-    Gtk::Button* button = 0;
-    View::bindWidgetToSignal(button, buttonName, &Gtk::Button::signal_clicked, obj, func);
+template <class T_handler> void View::bindButtonOnClick(const std::string& buttonName, T_handler* obj,
+                                                        void (T_handler::*func)(void)) {
+    View::bindWidgetToSignal<T_handler, Gtk::Button>(buttonName, &Gtk::Button::signal_clicked, obj, func);
 }
 
 //Find a button by the builder and bind a change-value-signal to a function of an object
-template <class T> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  buttonName,
-                                                T* obj, void (T::*func)(void)) {
-    Gtk::SpinButton* button = 0;
-    View::bindWidgetToSignal(button, buttonName, &Gtk::SpinButton::signal_value_changed, obj, func);
-    return button;
+template <class T_handler> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  buttonName, T_handler* obj,
+                                                                     void (T_handler::*func)(void)) {
+    return View::bindWidgetToSignal<T_handler, Gtk::SpinButton>( buttonName, &Gtk::SpinButton::signal_value_changed, obj, func);
 }
 
 //Find a widget by the builder and bind a signal to a function of an object
-template <class T_handler, class T_widget> void View::bindWidgetToSignal(T_widget* widget, const std::string&  buttonName,
-        Glib::SignalProxy0<void> (T_widget::*signal)(void), T_handler* obj, void (T_handler::*func)(void)) {
+template <class T_handler, class T_widget> T_widget* View::bindWidgetToSignal(const std::string&  buttonName,
+                                                                              Glib::SignalProxy0<void> (T_widget::*signal)(void),
+                                                                              T_handler* obj, void (T_handler::*func)(void)) {
     if(!_builder)
-        return;
+        return 0;
+
+    T_widget* widget = 0;
     _builder->get_widget(buttonName, widget);
     if (!widget)
-         return;
+        return widget;
+
     (widget->*signal)().connect(sigc::mem_fun(obj, func));
+    return widget;
 }
 
 void View::closeApplication() {

@@ -8,16 +8,18 @@
 #ifndef PRESENTER_H_
 #define PRESENTER_H_
 #include "IPresenter.h"
-#include "View.h"
+#include "IView.h"
 #include "Model.h"
+#include "ILogger.h"
 
 class Presenter: public virtual IPresenter {
 private:
-	View *_view;
+	IView *_view;
 	Model *_model;
+    ILogger *_logger;
 
 public:
-	Presenter(View *view, Model *model);
+	Presenter(IView *view, Model *model, ILogger *logger);
 	virtual void run();
 	virtual void calculate();
     virtual void setValue1(double);

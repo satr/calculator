@@ -11,7 +11,12 @@
 #include "ILogger.h"
 
 class ConsoleLogger: public virtual ILogger {
+private:
+    bool _includeDebug;
+    void ctorInit(bool includeDebug);
 public:
+    ConsoleLogger();
+    ConsoleLogger(bool includeDebug);
     virtual void logDebug(const std::string message);
     virtual void logInfo(const std::string message);
     virtual void logError(const std::string message);

@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     ConsoleLogger logger;
 	View view (argc, argv, &logger);
 	Model model;
-	Presenter presenter (&view, &model);
+	Presenter presenter (&view, &model, &logger);
 	presenter.run();
 	return 0;
 }
