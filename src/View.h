@@ -17,14 +17,14 @@ private:
     Gtk::Window *_appWindow;
     Gtk::Label *_lblResult;
 	IPresenter *_presenter;
-	void bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& widgetName, void (View::*)(void));
     void closeApplication();
     Glib::RefPtr<Gtk::Builder> createBuilder(const std::string& layoutFileName);
     void createApplication(int argc, char** argv, const char* applicationName);
     void logError(const char* message);
     void logError(const char* message, const Glib::Exception& ex);
     std::string toString(double value);
-	void onCalculateClicked();
+	template <class T> void bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& buttonName,
+	                                          T* obj, void (T::*func)(void));
 
 public:
 	View(int, char**);

@@ -35,15 +35,16 @@ void View::show(){
 		_app->run(*_appWindow);
 }
 
-//Find a button by the builder and bind a click-signal to a function
-void View::bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder,
-                             const std::string& buttonName,
-                             void (View::*func)(void)) {
-	Gtk::Button* button = 0;
-	builder->get_widget(buttonName, button);
-	if (!button)
-		return;
-	button->signal_clicked().connect(sigc::mem_fun(this, func));
+//Find a button by the builder and bind a click-signal to a function of an object
+template <class T> void View::bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& buttonName,
+                                                T* obj, void (T::*func)(void)) {
+    if(!builder)
+        return;
+    Gtk::Button* button = 0;
+    builder->get_widget(buttonName, button);
+    if (!button)
+        return;
+    button->signal_clicked().connect(sigc::mem_fun(obj, func));
 }
 
 void View::closeApplication() {
@@ -51,13 +52,9 @@ void View::closeApplication() {
         _app->remove_window(*_appWindow);
 }
 
-void View::onCalculateClicked(){
-    _presenter->calculate();
-}
-
 void View::setPresenter(IPresenter* presenter) {
     _presenter = presenter;
-    bindButtonOnClick(_builder, "btnCalculate", &View::onCalculateClicked);
+    bindButtonOnClick(_builder, "btnCalculate", _presenter, &IPresenter::calculate);
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
