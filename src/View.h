@@ -14,7 +14,8 @@ class View {
 private:
     Glib::RefPtr<Gtk::Application> _app;
     Glib::RefPtr<Gtk::Builder> _builder;
-	Gtk::Window *_appWindow;
+    Gtk::Window *_appWindow;
+    Gtk::Label *_lblResult;
 	IPresenter *_presenter;
 	void bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder, const std::string& widgetName, void (View::*)(void));
     void closeApplication();
@@ -22,13 +23,15 @@ private:
     void createApplication(int argc, char** argv, const char* applicationName);
     void logError(const char* message);
     void logError(const char* message, const Glib::Exception& ex);
+    std::string toString(double value);
+	void onCalculateClicked();
 
 public:
 	View(int, char**);
 	virtual ~View();
 	void show();
-	void onCalculateClicked();
 	void setPresenter(IPresenter*);
+	void setResult(double value);
 };
 
 

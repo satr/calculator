@@ -22,6 +22,7 @@ View::View(int argc, char **argv) {
         logError("Application window not fount in layout definition");
         return;
     }
+    _builder->get_widget("lblResult", _lblResult);
 }
 
 View::~View() {
@@ -50,9 +51,8 @@ void View::closeApplication() {
         _app->remove_window(*_appWindow);
 }
 
-//temporary closing the window
 void View::onCalculateClicked(){
-    closeApplication();
+    _presenter->calculate();
 }
 
 void View::setPresenter(IPresenter* presenter) {
@@ -87,3 +87,15 @@ Glib::RefPtr<Gtk::Builder> View::createBuilder(const std::string& layoutFileName
     return builder;
 }
 
+void View::setResult(double value) {
+    if(!_lblResult)
+        return;
+    _lblResult->set_text(toString(value));
+}
+
+std::string View::toString(double value)
+{
+  std::ostringstream str;
+  str << value;
+  return str.str();
+}

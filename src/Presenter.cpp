@@ -17,4 +17,5 @@ void Presenter::run(){
 }
 
 void Presenter::calculate() {
+    _view->setResult(1.23);
 }

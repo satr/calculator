@@ -13,6 +13,7 @@ class IPresenter{
 public:
     virtual ~IPresenter(){};
     virtual void run() = 0;
+    virtual void calculate() = 0;
 };
 
 
