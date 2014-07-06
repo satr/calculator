@@ -9,12 +9,12 @@
 
 Presenter::Presenter(View *view) {
 	_view = view;
-}
-
-Presenter::~Presenter() {
+    _view->setPresenter(this);
 }
 
 void Presenter::run(){
 	_view->show();
 }
 
+void Presenter::calculate() {
+}

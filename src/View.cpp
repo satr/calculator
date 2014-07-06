@@ -11,44 +11,31 @@
 using namespace std;
 
 View::View(int argc, char **argv) {
-	  app = Gtk::Application::create(argc, argv, "c.a.l.c.u.l.a.t.o.r");
-	  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
-	  try
-	  {
-	    builder->add_from_file("/home/user1/spikes/cpp/calculator/src/res/Main.glade");
-	  }
-	  catch(const Glib::FileError& ex)
-	  {
-	    std::cerr << "FileError: " << ex.what() << std::endl;
-	  }
-	  catch(const Glib::MarkupError& ex)
-	  {
-	    std::cerr << "MarkupError: " << ex.what() << std::endl;
-	  }
-	  catch(const Gtk::BuilderError& ex)
-	  {
-	    std::cerr << "BuilderError: " << ex.what() << std::endl;
-	  }
+    const char* APPLICATION_NAME = "c.a.l.c.u.l.a.t.o.r";
+    const char* LAYOUT_FILE_NAME = "/home/user1/spikes/cpp/calculator/src/res/Main.glade";
 
-	  builder->get_widget("applicationwindow", appWindow);
-	  if(!appWindow)
-	      return;
-
-	  BindButtonOnClick(builder, "btnCalculate", &View::OnCalculateClicked);
+    createApplication(argc, argv, APPLICATION_NAME);
+    _builder = createBuilder(LAYOUT_FILE_NAME);
+    const char* appWindowName = "applicationwindow";
+    _builder->get_widget(appWindowName, _appWindow);
+    if(!_appWindow){
+        logError("Application window not fount in layout definition");
+        return;
+    }
 }
 
 View::~View() {
-	if(appWindow)
-		delete appWindow;
+	if(_appWindow)
+		delete _appWindow;
 }
 
 void View::show(){
-	if(appWindow)
-		app->run(*appWindow);
+	if(_appWindow)
+		_app->run(*_appWindow);
 }
 
 //Find a button by the builder and bind a click-signal to a function
-void View::BindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder,
+void View::bindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder,
                              const std::string& buttonName,
                              void (View::*func)(void)) {
 	Gtk::Button* button = 0;
@@ -58,13 +45,45 @@ void View::BindButtonOnClick(Glib::RefPtr<Gtk::Builder> builder,
 	button->signal_clicked().connect(sigc::mem_fun(this, func));
 }
 
-void View::CloseApplication() {
-    if (appWindow)
-        app->remove_window(*appWindow);
+void View::closeApplication() {
+    if (_appWindow)
+        _app->remove_window(*_appWindow);
 }
 
 //temporary closing the window
-void View::OnCalculateClicked(){
-    CloseApplication();
+void View::onCalculateClicked(){
+    closeApplication();
+}
+
+void View::setPresenter(IPresenter* presenter) {
+    _presenter = presenter;
+    bindButtonOnClick(_builder, "btnCalculate", &View::onCalculateClicked);
+}
+
+void View::createApplication(int argc, char** argv, const char* applicationName) {
+    //applicationName - unique name, it should contain at least one full-stop
+   _app = Gtk::Application::create(argc, argv, applicationName);
+}
+
+void View::logError(const char* message, const Glib::Exception& ex) {
+    std::cerr << message << ex.what() << std::endl;
+}
+
+void View::logError(const char* message) {
+    std::cerr << message << std::endl;
+}
+
+Glib::RefPtr<Gtk::Builder> View::createBuilder(const std::string& layoutFileName) {
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
+    try {
+        builder->add_from_file(layoutFileName);
+    } catch (const Glib::FileError& ex) {
+        logError("FileError: ", ex);
+    } catch (const Glib::MarkupError& ex) {
+        logError("MarkupError: ", ex);
+    } catch (const Gtk::BuilderError& ex) {
+        logError("BuilderError: ", ex);
+    }
+    return builder;
 }
 

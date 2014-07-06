@@ -8,14 +8,15 @@
 #ifndef PRESENTER_H_
 #define PRESENTER_H_
 #include "View.h"
+#include "IPresenter.h"
 
-class Presenter {
+class Presenter: public virtual IPresenter {
 private:
 	View *_view;
 public:
 	Presenter(View *view);
-	virtual ~Presenter();
-	void run();
+	virtual void run();
+	void calculate();
 };
 
 #endif /* PRESENTER_H_ */
