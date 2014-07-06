@@ -7,6 +7,7 @@
 //============================================================================
 
 #include <iostream>
+#include "ConsoleLogger.h"
 #include "View.h"
 #include "Model.h"
 #include "Presenter.h"
@@ -15,7 +16,8 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	View view (argc, argv);
+    ConsoleLogger logger;
+	View view (argc, argv, &logger);
 	Model model;
 	Presenter presenter (&view, &model);
 	presenter.run();

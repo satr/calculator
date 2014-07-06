@@ -10,7 +10,7 @@
 
 using namespace std;
 
-View::View(int argc, char **argv) {
+View::View(int argc, char **argv, ILogger *logger): _logger(logger) {
     const char* APPLICATION_NAME = "c.a.l.c.u.l.a.t.o.r";
     const char* LAYOUT_FILE_NAME = "/home/user1/spikes/cpp/calculator/src/res/Main.glade";
 
@@ -19,7 +19,7 @@ View::View(int argc, char **argv) {
     const char* appWindowName = "applicationwindow";
     _builder->get_widget(appWindowName, _appWindow);
     if(!_appWindow){
-        logError("Application window not fount in layout definition");
+        _logger->logError("Application window not fount in layout definition");
         return;
     }
     _builder->get_widget("lblResult", _lblResult);
@@ -36,27 +36,29 @@ void View::show(){
 }
 
 //Find a button by the builder and bind a click-signal to a function of an object
-template <class T> Gtk::Button* View::bindButtonOnClick(const std::string& buttonName,
+template <class T> void View::bindButtonOnClick(const std::string& buttonName,
                                                 T* obj, void (T::*func)(void)) {
     Gtk::Button* button = 0;
-    if(!_builder)
-        return button;
-    _builder->get_widget(buttonName, button);
-    if (button)
-        button->signal_clicked().connect(sigc::mem_fun(obj, func));
-    return button;
+    View::bindWidgetToSignal(button, buttonName, &Gtk::Button::signal_clicked, obj, func);
 }
 
 //Find a button by the builder and bind a change-value-signal to a function of an object
 template <class T> Gtk::SpinButton* View::bindNumValueUpdate(const std::string&  buttonName,
                                                 T* obj, void (T::*func)(void)) {
     Gtk::SpinButton* button = 0;
-    if(!_builder)
-        return button;
-    _builder->get_widget(buttonName, button);
-    if (button)
-        button->signal_value_changed().connect(sigc::mem_fun(obj, func));
+    View::bindWidgetToSignal(button, buttonName, &Gtk::SpinButton::signal_value_changed, obj, func);
     return button;
+}
+
+//Find a widget by the builder and bind a signal to a function of an object
+template <class T_handler, class T_widget> void View::bindWidgetToSignal(T_widget* widget, const std::string&  buttonName,
+        Glib::SignalProxy0<void> (T_widget::*signal)(void), T_handler* obj, void (T_handler::*func)(void)) {
+    if(!_builder)
+        return;
+    _builder->get_widget(buttonName, widget);
+    if (!widget)
+         return;
+    (widget->*signal)().connect(sigc::mem_fun(obj, func));
 }
 
 void View::closeApplication() {
@@ -76,24 +78,16 @@ void View::createApplication(int argc, char** argv, const char* applicationName)
    _app = Gtk::Application::create(argc, argv, applicationName);
 }
 
-void View::logError(const char* message, const Glib::Exception& ex) {
-    std::cerr << message << ex.what() << std::endl;
-}
-
-void View::logError(const char* message) {
-    std::cerr << message << std::endl;
-}
-
 Glib::RefPtr<Gtk::Builder> View::createBuilder(const std::string& layoutFileName) {
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
     try {
         builder->add_from_file(layoutFileName);
     } catch (const Glib::FileError& ex) {
-        logError("FileError: ", ex);
+        _logger->logError("FileError", ex.what());
     } catch (const Glib::MarkupError& ex) {
-        logError("MarkupError: ", ex);
+        _logger->logError("MarkupError", ex.what());
     } catch (const Gtk::BuilderError& ex) {
-        logError("BuilderError: ", ex);
+        _logger->logError("BuilderError", ex.what());
     }
     return builder;
 }
