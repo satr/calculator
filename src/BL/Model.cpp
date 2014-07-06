@@ -9,19 +9,15 @@
 #include "Operations/AddOperation.h"
 #include "Operations/SubOperation.h"
 
-const std::string Model::UNDEFINED_OPERATION_ID = "undefined";
-
-Model::Model(): _value1(0), _value2(0), _currentOperationId(UNDEFINED_OPERATION_ID) {
+Model::Model(): _value1(0), _value2(0), _currentOperation(0) {
     _operations.push_back(new AddOperation);
     _operations.push_back(new SubOperation);
 }
 
 double Model::calculate() {
-    if(_currentOperationId == "add")
-        return _value1 + _value2;
-    if(_currentOperationId == "sub")
-        return _value1 - _value2;
-    return 0;
+    return _currentOperation
+           ? _currentOperation->execute(_value1, _value2)
+           : 0;
 }
 
 void Model::setValue1(double value) {
@@ -33,7 +29,12 @@ void Model::setValue2(double value) {
 }
 
 void Model::setCurrentOperation(std::string  operationId) {
-    _currentOperationId = operationId;
+    for (std::vector<OperationBase*>::iterator itr = _operations.begin(); itr != _operations.end(); itr++){
+        if((*itr)->getId() != operationId)
+            continue;
+        _currentOperation = *itr;
+        break;
+    }
 }
 
 std::vector<OperationBase*> Model::getOperations() {

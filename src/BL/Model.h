@@ -15,11 +15,10 @@ using namespace std;
 
 class Model {
 private:
-    static const std::string UNDEFINED_OPERATION_ID;
     double _value1;
     double _value2;
-    std::string _currentOperationId;
     std::vector<OperationBase*> _operations;
+    OperationBase* _currentOperation;
 
 public:
     Model();
