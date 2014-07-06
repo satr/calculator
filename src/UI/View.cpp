@@ -80,7 +80,6 @@ void View::setPresenter(IPresenter* presenter) {
     _numValue1 = bindNumValueUpdate("numValue1", this, &View::value1Updated);
     _numValue2 = bindNumValueUpdate("numValue2", this, &View::value2Updated);
     _lstOperation = bindComboBoxOnChange("lstOperation", this, &View::operationUpdated);
-    operationUpdated();//set first operation as current
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
@@ -133,4 +132,14 @@ std::string View::toString(double value)
   std::ostringstream str;
   str << value;
   return str.str();
+}
+
+void View::addOperation(std::string id, std::string name) {
+    if(!_lstOperation)
+        return;
+    _lstOperation->append(id, name);
+}
+
+void View::setCurrentOperation() {
+    _lstOperation->set_active(0);
 }

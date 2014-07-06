@@ -18,6 +18,8 @@ private:
 	Model *_model;
     ILogger *_logger;
 
+    void addOperationsToView(std::vector<OperationBase*> operations);
+
 public:
 	Presenter(IView *view, Model *model, ILogger *logger);
 	virtual void run();

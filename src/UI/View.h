@@ -8,6 +8,7 @@
 #ifndef VIEW_H_
 #define VIEW_H_
 #include <gtkmm.h>
+#include <iostream>
 #include "IView.h"
 #include "../Diagnostics/ILogger.h"
 #include "../UI/IPresenter.h"
@@ -46,6 +47,8 @@ public:
 	virtual void show();
 	virtual void setPresenter(IPresenter*);
 	virtual void setResult(double value);
+    virtual void addOperation(std::string id, std::string name);
+    virtual void setCurrentOperation();
 };
 
 #endif /* VIEW_H_ */

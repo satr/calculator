@@ -8,6 +8,8 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 #include <iostream>
+#include <vector>
+#include "Operations/OperationBase.h"
 
 using namespace std;
 
@@ -17,6 +19,7 @@ private:
     double _value1;
     double _value2;
     std::string _currentOperationId;
+    std::vector<OperationBase*> _operations;
 
 public:
     Model();
@@ -24,6 +27,7 @@ public:
     void setValue1(double);
     void setValue2(double);
     void setCurrentOperation(std::string);
+    std::vector<OperationBase*> getOperations();
 };
 
 #endif /* MODEL_H_ */

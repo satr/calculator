@@ -10,6 +10,17 @@
 Presenter::Presenter(IView *view, Model *model, ILogger *logger)
     : _view(view), _model(model), _logger(logger) {
     _view->setPresenter(this);
+    addOperationsToView(_model->getOperations());
+}
+
+void Presenter::addOperationsToView(std::vector<OperationBase*> operations) {
+    for (std::vector<OperationBase*>::iterator itr = operations.begin(); itr != operations.end(); itr++)
+        _view->addOperation((*itr)->getId(), (*itr)->getName());
+
+    if(operations.size() > 0)
+        _view->setCurrentOperation();
+
+    _logger->logDebug("add operations to view");
 }
 
 void Presenter::run(){
