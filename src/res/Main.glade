@@ -19,7 +19,7 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkApplicationWindow" id="applicationwindow">
+  <object class="GtkApplicationWindow" id="wndApplication">
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
     <child>
@@ -99,7 +99,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkComboBoxText" id="lstOperation">
+          <object class="GtkComboBoxText" id="lstOperations">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="active">0</property>

@@ -10,8 +10,8 @@
 #include <gtkmm.h>
 #include <iostream>
 #include "IView.h"
-#include "../Diagnostics/ILogger.h"
-#include "../UI/IPresenter.h"
+#include "Diagnostics/ILogger.h"
+#include "UI/IPresenter.h"
 
 class View: public virtual IView {
 private:
@@ -40,7 +40,14 @@ private:
 	void value1Updated();
 	void value2Updated();
 	void operationUpdated();
-
+	struct LayoutEntityNames{
+        static const char* APPLICATION_WINDOW;
+        static const char* VALUE1;
+        static const char* VALUE2;
+        static const char* OPERATIONS_LIST;
+        static const char* RESULT_BUTTON;
+        static const char* RESULT_VALUE;
+	};
 public:
 	View(int, char**, ILogger*);
 	virtual ~View();

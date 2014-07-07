@@ -13,17 +13,24 @@ using namespace std;
 const char* View::APPLICATION_NAME = "c.a.l.c.u.l.a.t.o.r";
 const char* View::LAYOUT_FILE_NAME = "/home/user1/spikes/cpp/calculator/src/res/Main.glade";
 
+const char* View::LayoutEntityNames::APPLICATION_WINDOW = "wndApplication";
+const char* View::LayoutEntityNames::VALUE1 = "numValue1";
+const char* View::LayoutEntityNames::VALUE2 = "numValue2";
+const char* View::LayoutEntityNames::OPERATIONS_LIST = "lstOperations";
+const char* View::LayoutEntityNames::RESULT_BUTTON = "btnCalculate";
+const char* View::LayoutEntityNames::RESULT_VALUE = "lblResult";
+
 View::View(int argc, char **argv, ILogger *logger): _logger(logger) {
 
     createApplication(argc, argv, APPLICATION_NAME);
     _builder = createBuilder(LAYOUT_FILE_NAME);
-    const char* appWindowName = "applicationwindow";
+    const char* appWindowName = LayoutEntityNames::APPLICATION_WINDOW;
     _builder->get_widget(appWindowName, _appWindow);
     if(!_appWindow){
         _logger->logError("Application window not fount in layout definition");
         return;
     }
-    _builder->get_widget("lblResult", _lblResult);
+    _builder->get_widget(LayoutEntityNames::RESULT_VALUE, _lblResult);
 }
 
 View::~View() {
@@ -76,10 +83,10 @@ void View::closeApplication() {
 
 void View::setPresenter(IPresenter* presenter) {
     _presenter = presenter;
-    bindButtonOnClick("btnCalculate", _presenter, &IPresenter::calculate);
-    _numValue1 = bindNumValueUpdate("numValue1", this, &View::value1Updated);
-    _numValue2 = bindNumValueUpdate("numValue2", this, &View::value2Updated);
-    _lstOperation = bindComboBoxOnChange("lstOperation", this, &View::operationUpdated);
+    bindButtonOnClick(LayoutEntityNames::RESULT_BUTTON, _presenter, &IPresenter::calculate);
+    _numValue1 = bindNumValueUpdate(LayoutEntityNames::VALUE1, this, &View::value1Updated);
+    _numValue2 = bindNumValueUpdate(LayoutEntityNames::VALUE2, this, &View::value2Updated);
+    _lstOperation = bindComboBoxOnChange(LayoutEntityNames::OPERATIONS_LIST, this, &View::operationUpdated);
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
