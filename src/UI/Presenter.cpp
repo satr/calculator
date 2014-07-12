@@ -10,7 +10,8 @@
 Presenter::Presenter(IView *view, Model *model, ILogger *logger)
     : _view(view), _model(model), _logger(logger) {
     _view->setPresenter(this);
-    addOperationsToView(_model->getOperations());
+    if(_view->isValid())
+        addOperationsToView(_model->getOperations());
 }
 
 void Presenter::addOperationsToView(std::vector<OperationBase*> operations) {

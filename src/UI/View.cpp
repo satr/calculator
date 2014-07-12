@@ -20,17 +20,20 @@ const char* View::LayoutEntityNames::OPERATIONS_LIST = "lstOperations";
 const char* View::LayoutEntityNames::RESULT_BUTTON = "btnCalculate";
 const char* View::LayoutEntityNames::RESULT_VALUE = "lblResult";
 
-View::View(int argc, char **argv, ILogger *logger): _logger(logger) {
+View::View(int argc, char **argv, ILogger *logger): _logger(logger), _isValid(true) {
 
     createApplication(argc, argv, APPLICATION_NAME);
     _builder = createBuilder(LAYOUT_FILE_NAME);
-    const char* appWindowName = LayoutEntityNames::APPLICATION_WINDOW;
-    _builder->get_widget(appWindowName, _appWindow);
-    if(!_appWindow){
-        _logger->logError("Application window not fount in layout definition");
+    if(!isValid()){
+        _logger->logError("Builder was not initialized");
         return;
     }
-    _builder->get_widget(LayoutEntityNames::RESULT_VALUE, _lblResult);
+    _builder->get_widget(LayoutEntityNames::APPLICATION_WINDOW, _appWindow);
+    if(!_appWindow){
+        _isValid = false;
+        _logger->logError("Application window not found in layout definition");
+        return;
+    }
 }
 
 View::~View() {
@@ -39,7 +42,7 @@ View::~View() {
 }
 
 void View::show(){
-	if(_appWindow)
+	if(isValid())
 		_app->run(*_appWindow);
 }
 
@@ -77,34 +80,52 @@ template <class T_handler, class T_widget> T_widget* View::bindWidgetToSignal(co
 }
 
 void View::closeApplication() {
-    if (_appWindow)
+    if (isValid())
         _app->remove_window(*_appWindow);
 }
 
 void View::setPresenter(IPresenter* presenter) {
     _presenter = presenter;
+    if(isValid())
+        initWidgets();
+}
+
+void View::initWidgets() {
     bindButtonOnClick(LayoutEntityNames::RESULT_BUTTON, _presenter, &IPresenter::calculate);
     _numValue1 = bindNumValueUpdate(LayoutEntityNames::VALUE1, this, &View::value1Updated);
     _numValue2 = bindNumValueUpdate(LayoutEntityNames::VALUE2, this, &View::value2Updated);
     _lstOperation = bindComboBoxOnChange(LayoutEntityNames::OPERATIONS_LIST, this, &View::operationUpdated);
+    _builder->get_widget(LayoutEntityNames::RESULT_VALUE, _lblResult);
 }
 
 void View::createApplication(int argc, char** argv, const char* applicationName) {
     //applicationName - unique name, it should contain at least one full-stop
-   _app = Gtk::Application::create(argc, argv, applicationName);
+    try {
+        _app = Gtk::Application::create(argc, argv, applicationName);
+        return;
+    } catch (const Glib::Exception& ex) {
+        _logger->logError("Create Gtk application error", ex.what());
+    } catch (exception& ex) {
+        _logger->logError("Create application error", ex.what());
+    }
+    _isValid = false;
 }
 
 Glib::RefPtr<Gtk::Builder> View::createBuilder(const std::string& layoutFileName) {
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
     try {
         builder->add_from_file(layoutFileName);
+        return builder;
     } catch (const Glib::FileError& ex) {
         _logger->logError("FileError", ex.what());
     } catch (const Glib::MarkupError& ex) {
         _logger->logError("MarkupError", ex.what());
     } catch (const Gtk::BuilderError& ex) {
         _logger->logError("BuilderError", ex.what());
+    } catch (const Glib::Exception& ex) {
+        _logger->logError("Create builder error", ex.what());
     }
+    _isValid = false;
     return builder;
 }
 
@@ -145,6 +166,10 @@ void View::addOperation(std::string id, std::string name) {
     if(!_lstOperation)
         return;
     _lstOperation->append(id, name);
+}
+
+bool View::isValid() {
+    return _isValid;
 }
 
 void View::setCurrentOperation() {

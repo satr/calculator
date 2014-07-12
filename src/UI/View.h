@@ -18,6 +18,7 @@ private:
     static const char* APPLICATION_NAME;
     static const char* LAYOUT_FILE_NAME;
     ILogger *_logger;
+    bool _isValid;
     Glib::RefPtr<Gtk::Application> _app;
     Glib::RefPtr<Gtk::Builder> _builder;
     Gtk::Window *_appWindow;
@@ -40,6 +41,8 @@ private:
 	void value1Updated();
 	void value2Updated();
 	void operationUpdated();
+    void initWidgets();
+
 	struct LayoutEntityNames{
         static const char* APPLICATION_WINDOW;
         static const char* VALUE1;
@@ -52,6 +55,7 @@ public:
 	View(int, char**, ILogger*);
 	virtual ~View();
 	virtual void show();
+	virtual bool isValid();
 	virtual void setPresenter(IPresenter*);
 	virtual void setResult(double value);
     virtual void addOperation(std::string id, std::string name);
