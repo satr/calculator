@@ -12,6 +12,7 @@
 
 class AddOperation: public virtual OperationBase {
 public:
+	static const char *Name;
     AddOperation();
     virtual double execute(double value1, double value2);
 };
